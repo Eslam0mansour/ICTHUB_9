@@ -1,77 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:icthubx/screens/screen_2.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int counter = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Welcome Back,',
-              style: TextStyle(
-                fontSize: 35,
-                fontWeight: FontWeight.w700,
+            Text(
+              'counter: $counter',
+              style: const TextStyle(
+                fontSize: 30,
+                color: Colors.green,
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            Image.asset(
-              'images/img.png',
-            ),
-            const MyCont(
-              textK: 'Get Start',
-              widthK: 200,
-            ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                MyCont(
-                  textK: 'Sign up',
-                  widthK: 100,
+            InkWell(
+              onTap: () {
+                setState(() {
+                  counter++;
+                });
+              },
+              child: Container(
+                width: double.infinity,
+                height: MediaQuery.sizeOf(context).height * 0.5,
+                color: Colors.red,
+                alignment: Alignment.center,
+                child: Text(
+                  'add${MediaQuery.sizeOf(context).height}\n${MediaQuery.sizeOf(context).width}',
+                  style: const TextStyle(fontSize: 30),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
-                MyCont(
-                  textK: 'login',
-                  widthK: 100,
-                ),
-              ],
+              ),
             ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.yellow,
+                foregroundColor: Colors.black,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Screen2(
+                      textG: counter.toString(),
+                    ),
+                  ),
+                );
+              },
+              child: const Text(
+                'screen two',
+              ),
+            )
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class MyCont extends StatelessWidget {
-  final String textK;
-
-  final double widthK;
-
-  const MyCont({super.key, required this.textK, required this.widthK});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: widthK,
-      height: 70,
-      color: const Color(0xff4A1EC7),
-      alignment: Alignment.center,
-      child: Text(
-        textK,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 25,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );
