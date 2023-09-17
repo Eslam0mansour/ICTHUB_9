@@ -1,8 +1,8 @@
 class ProductData {
-   String name;
-   String detail;
-   String image;
-   int price;
+  String name;
+  String detail;
+  String image;
+  int price;
 
   ProductData({
     required this.name,

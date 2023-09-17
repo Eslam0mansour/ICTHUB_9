@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:icthubx/screens/screen_2.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class CounterScreen extends StatefulWidget {
+  const CounterScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<CounterScreen> createState() => _CounterScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _CounterScreenState extends State<CounterScreen> {
   int counter = 0;
 
   @override
@@ -42,25 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow,
-                foregroundColor: Colors.black,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Screen2(
-                      textG: counter.toString(),
-                    ),
-                  ),
-                );
-              },
-              child: const Text(
-                'screen two',
-              ),
-            )
           ],
         ),
       ),

@@ -1,9 +1,8 @@
-import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart' as http;
-import 'package:icthubx/data/models/product_model.dart';
+import 'package:icthubx/data/data_source/products_data_source.dart';
+import 'package:icthubx/screens/login_screen.dart';
 import 'package:icthubx/screens/product_screen.dart';
 
 class ListScreen extends StatefulWidget {
@@ -14,39 +13,25 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
-  Future<List<ProductData>> getData() async {
-    List<ProductData> dataA = [];
-    try {
-      final res = await http.get(Uri.parse('https://dummyjson.com/products'));
-      if (res.statusCode == 200) {
-        Map<String, dynamic> responseData = jsonDecode(res.body);
-        for (var item in responseData['products']) {
-          dataA.add(ProductData.fromJson(item));
-        }
-      }
-      return dataA;
-    } catch (e) {
-      print(e);
-      return dataA;
-    }
-  }
-
-  List<ProductData> myList = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-      Duration.zero,
-      () async {
-        var data = await getData();
-        setState(() {
-          myList = data;
-          isLoading = false;
-        });
-      },
-    );
+    if (DataSource.myList.isEmpty) {
+      Future.delayed(
+        Duration.zero,
+        () async {
+          var data = await DataSource.getData();
+          setState(() {
+            DataSource.myList = data;
+            isLoading = false;
+          });
+        },
+      );
+    } else {
+      isLoading = false;
+    }
   }
 
   @override
@@ -56,12 +41,39 @@ class _ListScreenState extends State<ListScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF252837),
         title: const Text('Croma'),
-        leading: SvgPicture.asset(
-          'images/aaaa.svg',
-        ),
+        leading: InkWell(
+            onTap: () async {
+              await FirebaseAuth.instance.signOut().whenComplete(() {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
+              });
+            },
+            child: const Icon(
+              Icons.logout,
+            )),
         actions: [
           SvgPicture.asset(
             'images/bb.svg',
+          ),
+          IconButton(
+            onPressed: () async {
+              setState(() {
+                isLoading = true;
+              });
+              await DataSource.getData().then((value) {
+                DataSource.myList = value;
+                setState(() {
+                  isLoading = false;
+                });
+              });
+            },
+            icon: const Icon(
+              Icons.refresh,
+            ),
           ),
         ],
         leadingWidth: 20,
@@ -71,7 +83,7 @@ class _ListScreenState extends State<ListScreen> {
           ? const Center(child: CircularProgressIndicator())
           : SafeArea(
               child: GridView.builder(
-                itemCount: myList.length,
+                itemCount: DataSource.myList.length,
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
@@ -79,7 +91,7 @@ class _ListScreenState extends State<ListScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ProductScreen(
-                            dataK: myList[index],
+                            dataK: DataSource.myList[index],
                           ),
                         ),
                       );
@@ -93,7 +105,7 @@ class _ListScreenState extends State<ListScreen> {
                         image: DecorationImage(
                           fit: BoxFit.fill,
                           image: Image.network(
-                            myList[index].image,
+                            DataSource.myList[index].image,
                           ).image,
                         ),
                       ),
@@ -112,11 +124,11 @@ class _ListScreenState extends State<ListScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                myList[index].name,
+                                DataSource.myList[index].name,
                               ),
                             ),
                             Text(
-                              '${myList[index].price.toString()} EGP',
+                              '${DataSource.myList[index].price.toString()} EGP',
                               style: const TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,
