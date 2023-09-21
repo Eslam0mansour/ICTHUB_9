@@ -5,6 +5,7 @@ class MyFormFiled extends StatelessWidget {
   final String hintText;
   final String? Function(String?)? validator;
   Widget? prefixIcon;
+  TextInputType? keyboardType;
 
   MyFormFiled({
     super.key,
@@ -12,6 +13,7 @@ class MyFormFiled extends StatelessWidget {
     required this.hintText,
     required this.validator,
     this.prefixIcon,
+    this.keyboardType,
   });
 
   @override
@@ -27,6 +29,7 @@ class MyFormFiled extends StatelessWidget {
       ),
       child: TextFormField(
         controller: controller,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           fillColor: Colors.white,
           enabledBorder: InputBorder.none,

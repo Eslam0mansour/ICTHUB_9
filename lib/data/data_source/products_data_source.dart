@@ -1,28 +1,21 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:icthubx/data/models/product_model.dart';
+import 'package:icthubx/data/models/user_data_model.dart';
 
 class DataSource {
-  static Future<List<ProductData>> getData() async {
-    List<ProductData> dataA = [];
+  static Future<UserData?> getUserDataFromFireStore() async {
     try {
-      final res = await http.get(Uri.parse('https://dummyjson.com/products'));
+      String uid = FirebaseAuth.instance.currentUser!.uid;
 
-      if (res.statusCode == 200) {
-        Map<String, dynamic> responseData = jsonDecode(res.body);
-
-        for (var item in responseData['products']) {
-          ProductData object1 = ProductData.fromJson(item);
-          dataA.add(object1);
-        }
-      }
-      return dataA;
+      DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      return UserData.fromDoc(userDoc);
     } catch (e) {
       print(e);
-      return dataA;
+      return null;
     }
   }
 
-  static List<ProductData> myList = [];
+  static UserData? userData;
 }

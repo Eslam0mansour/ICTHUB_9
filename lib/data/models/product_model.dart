@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ProductData {
   String name;
   String detail;
@@ -11,12 +13,12 @@ class ProductData {
     required this.image,
   });
 
-  factory ProductData.fromJson(Map<String, dynamic> json) {
+  factory ProductData.formDocs(DocumentSnapshot<Map<String, dynamic>> docs) {
     return ProductData(
-      name: json['title'],
-      detail: json['description'],
-      price: json['price'],
-      image: json['thumbnail'],
+      name: docs['title'],
+      detail: docs['description'],
+      price: docs['price'],
+      image: docs['thumbnail'],
     );
   }
 }

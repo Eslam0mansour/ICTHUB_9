@@ -1,38 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:icthubx/data/data_source/products_data_source.dart';
+import 'package:icthubx/cubit/app_cubit.dart';
+import 'package:icthubx/cubit/app_state.dart';
 import 'package:icthubx/screens/login_screen.dart';
 import 'package:icthubx/screens/product_screen.dart';
 
-class ListScreen extends StatefulWidget {
+class ListScreen extends StatelessWidget {
   const ListScreen({super.key});
-
-  @override
-  State<ListScreen> createState() => _ListScreenState();
-}
-
-class _ListScreenState extends State<ListScreen> {
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    if (DataSource.myList.isEmpty) {
-      Future.delayed(
-        Duration.zero,
-        () async {
-          var data = await DataSource.getData();
-          setState(() {
-            DataSource.myList = data;
-            isLoading = false;
-          });
-        },
-      );
-    } else {
-      isLoading = false;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,15 +37,15 @@ class _ListScreenState extends State<ListScreen> {
           ),
           IconButton(
             onPressed: () async {
-              setState(() {
-                isLoading = true;
-              });
-              await DataSource.getData().then((value) {
-                DataSource.myList = value;
-                setState(() {
-                  isLoading = false;
-                });
-              });
+              // setState(() {
+              //   isLoading = true;
+              // });
+              // await context.read<AppCubit>().getData().then((value) {
+              //   context.read<AppCubit>().myList = value;
+              //   setState(() {
+              //     isLoading = false;
+              //   });
+              // });
             },
             icon: const Icon(
               Icons.refresh,
@@ -79,11 +55,51 @@ class _ListScreenState extends State<ListScreen> {
         leadingWidth: 20,
         centerTitle: true,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
+      body: BlocConsumer<AppCubit, AppState>(
+        listener: (context, state) {
+          if (state is GetProductsError) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        state.error,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          context.read<AppCubit>().getProductsData();
+                        },
+                        child: const Text('retray'),
+                      )
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is GetProductsLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is GetProductsError) {
+            return Center(
+              child: Text(
+                state.error,
+              ),
+            );
+          } else if (state is GetProductsDone) {
+            return SafeArea(
               child: GridView.builder(
-                itemCount: DataSource.myList.length,
+                itemCount: context.read<AppCubit>().myList.length,
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
@@ -91,7 +107,7 @@ class _ListScreenState extends State<ListScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ProductScreen(
-                            dataK: DataSource.myList[index],
+                            dataK: context.read<AppCubit>().myList[index],
                           ),
                         ),
                       );
@@ -105,7 +121,7 @@ class _ListScreenState extends State<ListScreen> {
                         image: DecorationImage(
                           fit: BoxFit.fill,
                           image: Image.network(
-                            DataSource.myList[index].image,
+                            context.read<AppCubit>().myList[index].image,
                           ).image,
                         ),
                       ),
@@ -124,11 +140,11 @@ class _ListScreenState extends State<ListScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                DataSource.myList[index].name,
+                                context.read<AppCubit>().myList[index].name,
                               ),
                             ),
                             Text(
-                              '${DataSource.myList[index].price.toString()} EGP',
+                              '${context.read<AppCubit>().myList[index].price.toString()} EGP',
                               style: const TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,
@@ -144,7 +160,12 @@ class _ListScreenState extends State<ListScreen> {
                   crossAxisCount: 2,
                 ),
               ),
-            ),
+            );
+          } else {
+            return const Center(child: Text('errorrrrrr'));
+          }
+        },
+      ),
     );
   }
 }

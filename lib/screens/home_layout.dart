@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:icthubx/screens/counter_screen.dart';
 import 'package:icthubx/screens/list_screen.dart';
+import 'package:icthubx/screens/profile_screen.dart';
 
 class HomeLayout extends StatefulWidget {
   const HomeLayout({super.key});
@@ -14,7 +14,7 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   List<Widget> listScreens = [
     const ListScreen(),
-    const CounterScreen(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -37,9 +37,9 @@ class _HomeLayoutState extends State<HomeLayout> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.add,
+              Icons.person,
             ),
-            label: 'counter',
+            label: 'profile',
           ),
         ],
       ),
