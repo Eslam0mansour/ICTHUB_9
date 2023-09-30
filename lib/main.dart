@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:icthubx/cubit/app_cubit.dart';
+import 'package:icthubx/cubit/auth_cubit.dart';
 import 'package:icthubx/obesrver.dart';
 import 'package:icthubx/screens/home_layout.dart';
 import 'package:icthubx/screens/login_screen.dart';
@@ -17,7 +17,7 @@ Future<void> main() async {
   );
   runApp(
     BlocProvider(
-      create: (context) => AppCubit()..getProductsData(),
+      create: (context) => AuthCubit(),
       child: ICTAPP(),
     ),
   );

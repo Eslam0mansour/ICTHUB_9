@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:icthubx/colors.dart';
 
 class MyFormFiled extends StatelessWidget {
   final TextEditingController controller;
@@ -6,40 +7,64 @@ class MyFormFiled extends StatelessWidget {
   final String? Function(String?)? validator;
   Widget? prefixIcon;
   TextInputType? keyboardType;
+  final void Function(String)? onChanged;
 
   MyFormFiled({
     super.key,
     required this.controller,
     required this.hintText,
-    required this.validator,
+    this.validator,
     this.prefixIcon,
     this.keyboardType,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 60,
-      margin: const EdgeInsets.all(10),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: Colors.grey[300],
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 10,
       ),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
-          fillColor: Colors.white,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          errorBorder: InputBorder.none,
-          focusedErrorBorder: InputBorder.none,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(
+              color: AppColors.border,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(
+              color: Colors.blue,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(
+              color: AppColors.border,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(
+              color: AppColors.border,
+            ),
+          ),
+          fillColor: AppColors.formText,
+          filled: true,
           hintText: hintText,
+          hintStyle: const TextStyle(
+            color: AppColors.hintText,
+            fontSize: 17,
+            fontFamily: 'Urbanist',
+          ),
           prefixIcon: prefixIcon,
         ),
         validator: validator,
+        onChanged: onChanged,
       ),
     );
   }

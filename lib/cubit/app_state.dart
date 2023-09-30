@@ -1,12 +1,12 @@
-abstract class AppState {}
+abstract class ListOfProductsState {}
 
-class AppInitial extends AppState {}
+class ListOfProductsInitial extends ListOfProductsState {}
 
-class GetProductsLoading extends AppState {}
+class GetProductsLoading extends ListOfProductsState {}
 
-class GetProductsDone extends AppState {}
+class GetProductsDone extends ListOfProductsState {}
 
-class GetProductsError extends AppState {
+class GetProductsError extends ListOfProductsState {
   final String error;
 
   GetProductsError({required this.error});

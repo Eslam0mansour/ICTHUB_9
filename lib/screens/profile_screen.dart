@@ -1,48 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:icthubx/data/data_source/products_data_source.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:icthubx/cubit/profile_cubit.dart';
+import 'package:icthubx/cubit/profile_state.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    if (DataSource.userData == null) {
-      Future.delayed(
-        Duration.zero,
-        () async {
-          var data = await DataSource.getUserDataFromFireStore();
-          setState(() {
-            DataSource.userData = data;
-            isLoading = false;
-          });
-        },
-      );
-    } else {
-      isLoading = false;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
+      body: BlocConsumer<ProfileCubit, ProfileState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          if (state is GetUserDataLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is GetUserDataError) {
+            return Center(
+              child: Text(
+                state.error,
+              ),
+            );
+          } else if (state is GetUserDataDone) {
+            return SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ListTile(
                     title: Text(
-                      DataSource.userData!.email,
+                      context.read<ProfileCubit>().userData!.email,
                     ),
                     leading: const Icon(
                       Icons.email,
@@ -50,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   ListTile(
                     title: Text(
-                      DataSource.userData!.name,
+                      context.read<ProfileCubit>().userData!.name,
                     ),
                     leading: const Icon(
                       Icons.person,
@@ -58,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   ListTile(
                     title: Text(
-                      DataSource.userData!.phone,
+                      context.read<ProfileCubit>().userData!.phone,
                     ),
                     leading: const Icon(
                       Icons.phone,
@@ -66,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   ListTile(
                     title: Text(
-                      DataSource.userData!.pass,
+                      context.read<ProfileCubit>().userData!.pass,
                     ),
                     leading: const Icon(
                       Icons.password,
@@ -74,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   ListTile(
                     title: Text(
-                      DataSource.userData!.uid,
+                      context.read<ProfileCubit>().userData!.uid,
                     ),
                     leading: const Icon(
                       Icons.access_alarms_outlined,
@@ -82,7 +70,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               ),
-            ),
+            );
+          } else {
+            return const Text('errror');
+          }
+        },
+      ),
     );
   }
 }

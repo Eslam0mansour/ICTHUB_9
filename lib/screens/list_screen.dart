@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:icthubx/colors.dart';
 import 'package:icthubx/cubit/app_cubit.dart';
 import 'package:icthubx/cubit/app_state.dart';
 import 'package:icthubx/screens/login_screen.dart';
@@ -17,8 +18,8 @@ class ListScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF252837),
         title: const Text('Croma'),
-        leading: InkWell(
-            onTap: () async {
+        leading: IconButton(
+            onPressed: () async {
               await FirebaseAuth.instance.signOut().whenComplete(() {
                 Navigator.pushReplacement(
                   context,
@@ -28,7 +29,7 @@ class ListScreen extends StatelessWidget {
                 );
               });
             },
-            child: const Icon(
+            icon: const Icon(
               Icons.logout,
             )),
         actions: [
@@ -40,8 +41,8 @@ class ListScreen extends StatelessWidget {
               // setState(() {
               //   isLoading = true;
               // });
-              // await context.read<AppCubit>().getData().then((value) {
-              //   context.read<AppCubit>().myList = value;
+              // await context.read<ListOfProductsCubit>().getData().then((value) {
+              //   context.read<ListOfProductsCubit>().myList = value;
               //   setState(() {
               //     isLoading = false;
               //   });
@@ -52,10 +53,10 @@ class ListScreen extends StatelessWidget {
             ),
           ),
         ],
-        leadingWidth: 20,
+        leadingWidth: 50,
         centerTitle: true,
       ),
-      body: BlocConsumer<AppCubit, AppState>(
+      body: BlocConsumer<ListOfProductsCubit, ListOfProductsState>(
         listener: (context, state) {
           if (state is GetProductsError) {
             showDialog(
@@ -74,7 +75,7 @@ class ListScreen extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
-                          context.read<AppCubit>().getProductsData();
+                          context.read<ListOfProductsCubit>().getProductsData();
                         },
                         child: const Text('retray'),
                       )
@@ -99,60 +100,59 @@ class ListScreen extends StatelessWidget {
           } else if (state is GetProductsDone) {
             return SafeArea(
               child: GridView.builder(
-                itemCount: context.read<AppCubit>().myList.length,
+                itemCount: context.read<ListOfProductsCubit>().myList.length,
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
+                      final product =
+                          context.read<ListOfProductsCubit>().myList[index];
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ProductScreen(
-                            dataK: context.read<AppCubit>().myList[index],
+                            dataK: product,
                           ),
                         ),
                       );
                     },
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFFFFF),
-                        borderRadius: BorderRadius.circular(30),
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: Image.network(
-                            context.read<AppCubit>().myList[index].image,
-                          ).image,
-                        ),
-                      ),
-                      alignment: Alignment.bottomCenter,
-                      margin: const EdgeInsets.all(10),
-                      child: Container(
-                        height: 50,
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(30),
-                                bottomRight: Radius.circular(30))),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                context.read<AppCubit>().myList[index].name,
-                              ),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFFFFF),
+                            borderRadius: BorderRadius.circular(30),
+                            image: DecorationImage(
+                              fit: BoxFit.contain,
+                              image: Image.network(
+                                context
+                                    .read<ListOfProductsCubit>()
+                                    .myList[index]
+                                    .image,
+                              ).image,
                             ),
-                            Text(
-                              '${context.read<AppCubit>().myList[index].price.toString()} EGP',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                          ),
+                          alignment: Alignment.bottomCenter,
+                          margin: const EdgeInsets.all(10),
                         ),
-                      ),
+                        Text(
+                          context
+                              .read<ListOfProductsCubit>()
+                              .myList[index]
+                              .name,
+                          style: const TextStyle(
+                            color: AppColors.hintText,
+                          ),
+                        ),
+                        Text(
+                          '${context.read<ListOfProductsCubit>().myList[index].price.toString()} EGP',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },
